@@ -24,29 +24,28 @@ export default function NoteEditor() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow">
-      <div className="mb-4">
+    <form onSubmit={handleSubmit}>
+      <div style={{ marginBottom: '10px' }}>
         <input
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Note title (optional)"
-          className="w-full p-2 border rounded"
+          placeholder="Title (optional)"
+          style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
         />
       </div>
-      <div className="mb-4">
+      <div style={{ marginBottom: '10px' }}>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Write your note here..."
-          className="w-full p-2 border rounded"
-          rows={4}
+          style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px', minHeight: '100px' }}
           required
         />
       </div>
       <button
         type="submit"
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+        style={{ width: '100%', padding: '10px', background: '#4a90e2', color: 'white', border: 'none', borderRadius: '4px' }}
       >
         Save Note
       </button>

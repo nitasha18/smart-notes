@@ -51,12 +51,24 @@ export const addNote = (note) => async (dispatch) => {
   }
 };
 
+
 export const deleteNote = (id) => async (dispatch) => {
   try {
+    console.log("Deleting document with ID:", id);
     await deleteDoc(doc(db, "notes", id));
+    console.log("Document successfully deleted!");
   } catch (error) {
-    console.error("Error deleting note:", error);
+    console.error("Error removing document: ", error);
+    throw error; // This will trigger the .catch in your component
   }
+};
+
+const handleDelete = (id) => {
+  console.log("Attempting to delete note ID:", id);
+  dispatch(deleteNote(id))
+    .unwrap()
+    .then(() => console.log("Delete successful"))
+    .catch(err => console.error("Delete failed:", err));
 };
 
 export const { setNotes, setLoading, setError } = noteSlice.actions;
