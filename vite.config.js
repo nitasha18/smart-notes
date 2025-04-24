@@ -4,8 +4,9 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
+    outDir: 'dist',
     rollupOptions: {
-      external: ['firebase', 'firebase/firestore'] // Add Firebase-related modules here
+      input: 'src/main.jsx'
     }
   }
 })

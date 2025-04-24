@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { addNote, updateNote } from '../features/notes/noteSlice';
 import { useDispatch } from 'react-redux';
+import { addNote, updateNote } from '../features/notes/noteSlice';
 
 export default function NoteEditor({ editNote }) {
   const dispatch = useDispatch();
@@ -17,17 +17,10 @@ export default function NoteEditor({ editNote }) {
       id: editNote?.id || Date.now().toString() 
     };
     
-    if(editNote?.id) {
+    if (editNote?.id) {
       dispatch(updateNote(note));
     } else {
       dispatch(addNote(note));
-    }
-    
-    // Reset form after save
-    if(!editNote) {
-      setContent('');
-      setTitle('New Note');
-      setTags([]);
     }
   };
 
@@ -43,11 +36,6 @@ export default function NoteEditor({ editNote }) {
         onChange={(e) => setContent(e.target.value)}
         placeholder="Start typing your note..."
       />
-      <div className="tags-container">
-        {tags.map(tag => (
-          <span key={tag} className="tag">{tag}</span>
-        ))}
-      </div>
       <button onClick={handleSave}>
         {editNote?.id ? 'Update Note' : 'Save Note'}
       </button>

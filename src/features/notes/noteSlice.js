@@ -1,10 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { collection, doc, setDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../services/firebase';
-import { doc, setDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 
 const initialState = {
   notes: [],
-  searchQuery: ''
+  searchQuery: '',
+  status: 'idle'
 };
 
 export const noteSlice = createSlice({
@@ -16,11 +17,17 @@ export const noteSlice = createSlice({
     },
     setSearchQuery: (state, action) => {
       state.searchQuery = action.payload;
+    },
+    updateNoteInState: (state, action) => {
+      const index = state.notes.findIndex(note => note.id === action.payload.id);
+      if (index !== -1) {
+        state.notes[index] = action.payload;
+      }
     }
   }
 });
 
-// Real-time Firestore listener
+// Thunk for real-time listener
 export const setupNotesListener = () => (dispatch) => {
   return onSnapshot(collection(db, "notes"), (snapshot) => {
     const notes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -28,13 +35,20 @@ export const setupNotesListener = () => (dispatch) => {
   });
 };
 
-export const addNote = (note) => async () => {
+// Action creators
+export const addNote = (note) => async (dispatch) => {
   await setDoc(doc(db, "notes", note.id), note);
+};
+
+export const updateNote = (note) => async (dispatch) => {
+  await setDoc(doc(db, "notes", note.id), note);
+  dispatch(noteSlice.actions.updateNoteInState(note));
 };
 
 export const deleteNote = (id) => async () => {
   await deleteDoc(doc(db, "notes", id));
 };
 
+// Export all actions and reducer
 export const { setSearchQuery } = noteSlice.actions;
 export default noteSlice.reducer;

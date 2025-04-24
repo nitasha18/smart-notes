@@ -1,19 +1,16 @@
-import { useEffect } from 'react';
-import { setupNotesListener } from './features/notes/noteSlice';
-import { useDispatch } from 'react-redux';
+import { Provider } from 'react-redux';
+import { store } from './app/store';
+import NoteList from './components/NoteList';
+import NoteEditor from './components/NoteEditor';
 
-function App() {
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const unsubscribe = dispatch(setupNotesListener());
-    return () => unsubscribe();
-  }, [dispatch]);
-
+export default function App() {
   return (
-    <div className="app">
-      <NoteEditor />
-      <NoteList />
-    </div>
+    <Provider store={store}>
+      <div className="app-container">
+        <h1>Smart Notes</h1>
+        <NoteEditor />
+        <NoteList />
+      </div>
+    </Provider>
   );
 }
