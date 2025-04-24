@@ -1,35 +1,38 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { addNote, updateNote } from '../features/notes/noteSlice';
-import { generateMetadata } from '../services/openai';
-import { ReactComponent as MagicIcon } from '../assets/magic.svg';
+import { useDispatch } from 'react-redux';
 
 export default function NoteEditor({ editNote }) {
+  const dispatch = useDispatch();
   const [content, setContent] = useState(editNote?.content || '');
-  const [title, setTitle] = useState(editNote?.title || '');
+  const [title, setTitle] = useState(editNote?.title || 'New Note');
   const [tags, setTags] = useState(editNote?.tags || []);
 
-  const handleAIAssist = async () => {
-    const { title: aiTitle, tags: aiTags } = await generateMetadata(content);
-    setTitle(aiTitle);
-    setTags(aiTags);
-  };
-
   const handleSave = () => {
-    const note = { title, content, tags, date: new Date().toISOString() };
+    const note = { 
+      title, 
+      content, 
+      tags, 
+      date: new Date().toISOString(),
+      id: editNote?.id || Date.now().toString() 
+    };
+    
     if(editNote?.id) {
-      updateNote({ id: editNote.id, ...note });
+      dispatch(updateNote(note));
     } else {
-      addNote(note);
+      dispatch(addNote(note));
+    }
+    
+    // Reset form after save
+    if(!editNote) {
+      setContent('');
+      setTitle('New Note');
+      setTags([]);
     }
   };
 
   return (
-    <div className="editor-container">
-      <div className="ai-assist">
-        <button onClick={handleAIAssist}>
-          <MagicIcon /> AI Enhance
-        </button>
-      </div>
+    <div className="note-editor">
       <input 
         value={title}
         onChange={(e) => setTitle(e.target.value)}
@@ -41,9 +44,13 @@ export default function NoteEditor({ editNote }) {
         placeholder="Start typing your note..."
       />
       <div className="tags-container">
-        {tags.map(tag => <span key={tag} className="tag">{tag}</span>)}
+        {tags.map(tag => (
+          <span key={tag} className="tag">{tag}</span>
+        ))}
       </div>
-      <button onClick={handleSave}>Save Note</button>
+      <button onClick={handleSave}>
+        {editNote?.id ? 'Update Note' : 'Save Note'}
+      </button>
     </div>
   );
 }
