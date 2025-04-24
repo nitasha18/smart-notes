@@ -4,8 +4,8 @@ import { db } from '../../services/firebase';
 
 const initialState = {
   notes: [],
-  searchQuery: '',
-  status: 'idle'
+  status: 'idle', // 'idle' | 'loading' | 'succeeded' | 'failed'
+  error: null
 };
 
 export const noteSlice = createSlice({
@@ -14,41 +14,50 @@ export const noteSlice = createSlice({
   reducers: {
     setNotes: (state, action) => {
       state.notes = action.payload;
+      state.status = 'succeeded';
     },
-    setSearchQuery: (state, action) => {
-      state.searchQuery = action.payload;
+    setLoading: (state) => {
+      state.status = 'loading';
     },
-    updateNoteInState: (state, action) => {
-      const index = state.notes.findIndex(note => note.id === action.payload.id);
-      if (index !== -1) {
-        state.notes[index] = action.payload;
-      }
+    setError: (state, action) => {
+      state.status = 'failed';
+      state.error = action.payload;
     }
   }
 });
 
-// Thunk for real-time listener
-export const setupNotesListener = () => (dispatch) => {
-  return onSnapshot(collection(db, "notes"), (snapshot) => {
-    const notes = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    dispatch(noteSlice.actions.setNotes(notes));
-  });
+export const fetchNotes = () => (dispatch) => {
+  dispatch(setLoading());
+  try {
+    return onSnapshot(collection(db, "notes"), (snapshot) => {
+      const notes = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      dispatch(setNotes(notes));
+    }, (error) => {
+      dispatch(setError(error.message));
+    });
+  } catch (error) {
+    dispatch(setError(error.message));
+  }
 };
 
-// Action creators
 export const addNote = (note) => async (dispatch) => {
-  await setDoc(doc(db, "notes", note.id), note);
+  try {
+    await setDoc(doc(db, "notes", note.id), note);
+  } catch (error) {
+    console.error("Error adding note:", error);
+  }
 };
 
-export const updateNote = (note) => async (dispatch) => {
-  await setDoc(doc(db, "notes", note.id), note);
-  dispatch(noteSlice.actions.updateNoteInState(note));
+export const deleteNote = (id) => async (dispatch) => {
+  try {
+    await deleteDoc(doc(db, "notes", id));
+  } catch (error) {
+    console.error("Error deleting note:", error);
+  }
 };
 
-export const deleteNote = (id) => async () => {
-  await deleteDoc(doc(db, "notes", id));
-};
-
-// Export all actions and reducer
-export const { setSearchQuery } = noteSlice.actions;
+export const { setNotes, setLoading, setError } = noteSlice.actions;
 export default noteSlice.reducer;

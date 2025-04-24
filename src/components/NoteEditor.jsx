@@ -1,44 +1,55 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { addNote, updateNote } from '../features/notes/noteSlice';
+import { addNote } from '../features/notes/noteSlice';
 
-export default function NoteEditor({ editNote }) {
+export default function NoteEditor() {
   const dispatch = useDispatch();
-  const [content, setContent] = useState(editNote?.content || '');
-  const [title, setTitle] = useState(editNote?.title || 'New Note');
-  const [tags, setTags] = useState(editNote?.tags || []);
+  const [content, setContent] = useState('');
+  const [title, setTitle] = useState('');
 
-  const handleSave = () => {
-    const note = { 
-      title, 
-      content, 
-      tags, 
-      date: new Date().toISOString(),
-      id: editNote?.id || Date.now().toString() 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!content.trim()) return;
+
+    const note = {
+      id: Date.now().toString(),
+      title: title.trim(),
+      content: content.trim(),
+      createdAt: new Date().toISOString()
     };
-    
-    if (editNote?.id) {
-      dispatch(updateNote(note));
-    } else {
-      dispatch(addNote(note));
-    }
+
+    dispatch(addNote(note));
+    setContent('');
+    setTitle('');
   };
 
   return (
-    <div className="note-editor">
-      <input 
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Note title"
-      />
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder="Start typing your note..."
-      />
-      <button onClick={handleSave}>
-        {editNote?.id ? 'Update Note' : 'Save Note'}
+    <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow">
+      <div className="mb-4">
+        <input
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Note title (optional)"
+          className="w-full p-2 border rounded"
+        />
+      </div>
+      <div className="mb-4">
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Write your note here..."
+          className="w-full p-2 border rounded"
+          rows={4}
+          required
+        />
+      </div>
+      <button
+        type="submit"
+        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+      >
+        Save Note
       </button>
-    </div>
+    </form>
   );
 }
