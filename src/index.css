@@ -9,7 +9,7 @@ body {
   box-sizing: border-box;
 }
 
-/* Make sure all buttons are visible */
+
 button {
   opacity: 1 !important;
   visibility: visible !important;
