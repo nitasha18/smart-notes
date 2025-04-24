@@ -1,35 +1,23 @@
-import { ErrorBoundary } from './ErrorBoundary'
 import { useEffect } from 'react'
-import { setupNotesListener } from './features/notes/noteSlice'
 import { useDispatch } from 'react-redux'
+import { setupNotesListener } from './features/notes/noteSlice'
+import NoteList from './components/NoteList'
+import NoteEditor from './components/NoteEditor'
 
-function App() {
+export default function App() {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    console.log("App mounted, setting up Firestore listener")
+    console.log('Initializing Firestore listener')
     const unsubscribe = dispatch(setupNotesListener())
     return () => unsubscribe()
   }, [dispatch])
 
   return (
-    <ErrorBoundary>
-      <div className="app">
-        <h1>Smart Notes</h1>
-        <NoteEditor />
-        <NoteList />
-      </div>
-    </ErrorBoundary>
+    <div className="app" style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
+      <h1>Smart Notes</h1>
+      <NoteEditor />
+      <NoteList />
+    </div>
   )
 }
-
-useEffect(() => {
-  import('./services/firebase').then(({db}) => {
-    db.collection("test").doc("test").set({test: true})
-      .then(() => console.log("Firestore write successful"))
-      .catch(e => console.error("Firestore write failed:", e))
-  })
-}, [])
-
-
-export default App
