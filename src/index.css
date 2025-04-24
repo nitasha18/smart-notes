@@ -6,14 +6,14 @@ body {
 
 .note-list {
   display: grid;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 15px;
+  margin-top: 20px;
 }
 
 .note-card {
   border: 1px solid #ddd;
-  padding: 1rem;
-  border-radius: 4px;
+  padding: 15px;
+  border-radius: 8px;
 }
 
 .note-editor {

@@ -10,16 +10,5 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 }
 
-// Debug
-console.log('Firebase Config:', {
-  projectId: firebaseConfig.projectId,
-  appId: firebaseConfig.appId
-})
-
 const app = initializeApp(firebaseConfig)
 export const db = getFirestore(app)
-
-// Test connection
-db.collection('test').doc('test').get()
-  .then(() => console.log('Firestore connection successful'))
-  .catch(e => console.error('Firestore connection failed:', e))

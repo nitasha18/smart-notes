@@ -5,11 +5,7 @@ import { store } from './app/store'
 import App from './App'
 import './index.css'
 
-// Debug check
-console.log('React version:', React.version)
-
-const root = createRoot(document.getElementById('root'))
-root.render(
+createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
       <App />
