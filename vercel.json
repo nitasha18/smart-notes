@@ -5,14 +5,21 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "dist"
+        "distDir": "dist",
+        "cleanUrls": true
       }
     }
   ],
   "routes": [
     {
+      "src": "/[^.]+",
+      "dest": "/",
+      "status": 200
+    },
+    {
       "src": "/(.*)",
-      "dest": "/index.html"
+      "dest": "/index.html",
+      "status": 200
     }
   ]
 }
